@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment Variables
+.env
+
+# Database (Keep your live mock data out of version control)
+*.db
+*.sqlite3
+fci.db
+
+# Frontend / React
+node_modules/
+dist/
+build/
+.DS_Store
+
+
+node_modules/
+dist/
+.env
+__pycache__/
+*.db
