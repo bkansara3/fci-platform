@@ -214,11 +214,31 @@ class MockFCILLM(BaseLLM):
 
     def _analyze(self, prompt: str) -> str:
         """Parse prompt context and generate structured JSON analysis."""
-        # Extract fields injected by the LangGraph planner node
+        
+        # ── 1. Intercept Distributed Trace Requests ──
+        trace_id = self._extract(prompt, "TRACE_ID")
+        if trace_id:
+            return json.dumps({
+                "root_cause": "The deepest node in the trace (payment-service or inventory-service) failed due to an external dependency timeout, causing parent services to fail via broken HTTP connections.",
+                "risk_level": "high",
+                "risk_summary": "Cascading distributed failure detected. The failure originated at the bottom of the stack and propagated upward, resulting in a dropped order.",
+                "recommended_fixes": [
+                    "Implement circuit breakers in the parent services to fail fast.",
+                    "Ensure the root dependency has proper retry logic with exponential backoff.",
+                    "Add dead-letter queues to catch dropped orders during async transitions."
+                ],
+                "remediation_actions": [
+                    "Check external API status pages (e.g., Stripe, Warehouse).",
+                    "Manually replay the failed order sequence.",
+                    "Review timeout configurations on internal inter-service calls."
+                ],
+                "confidence": 0.95
+            })
+
+        # ── 2. Standard Aggregated Analysis (Existing Logic) ──
         error_type = self._extract(prompt, "ERROR_TYPE")
         service = self._extract(prompt, "SERVICE")
         count = int(self._extract(prompt, "COUNT") or "1")
-        patterns = self._extract(prompt, "PATTERNS")
 
         kb = ANALYSIS_KB.get(error_type, DEFAULT_ANALYSIS)
         cause = random.choice(kb["causes"])
@@ -227,7 +247,6 @@ class MockFCILLM(BaseLLM):
         conf_min, conf_max = kb["risk_range"]
         confidence = round(random.uniform(conf_min, conf_max), 2)
 
-        # Risk level from count + error type severity
         if count >= 50 or error_type in ("DatabaseConnectionError", "DependencyFailure"):
             risk = "critical" if count >= 80 else "high"
         elif count >= 20:

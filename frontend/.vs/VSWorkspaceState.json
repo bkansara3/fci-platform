@@ -2,9 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\lib",
+    "\\src\\components",
     "\\src\\pages"
   ],
-  "SelectedNode": "\\src\\lib\\useApi.js",
+  "SelectedNode": "\\src\\components\\Sidebar.jsx",
   "PreviewInSolutionExplorer": false
 }

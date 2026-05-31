@@ -5,12 +5,17 @@ from datetime import datetime, timezone, timedelta
 from app.database import get_db
 from app.models import Failure
 from app.schemas import AnalyticsResponse
+from app.auth import get_current_user
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 
 @router.get("", response_model=AnalyticsResponse)
-def get_analytics(db: Session = Depends(get_db)):
+def get_analytics(
+    db: Session = Depends(get_db),
+     ):
+    
+    
     now = datetime.now(timezone.utc)
     one_hour_ago = now - timedelta(hours=1)
     twenty_four_ago = now - timedelta(hours=24)

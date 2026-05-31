@@ -4,17 +4,23 @@ from typing import Any
 
 
 class FailureOut(BaseModel):
-    id: int
-    service_name: str
-    endpoint: str
-    http_method: str
-    status_code: int
-    error_type: str
-    error_message: str
-    stack_trace: str | None
-    request_metadata: dict[str, Any] | None
-    environment: str
-    timestamp: datetime
+    id:               int
+    service_name:     str
+    endpoint:         str
+    http_method:      str
+    status_code:      int
+    error_type:       str
+    error_message:    str
+    stack_trace:      str | None
+    request_metadata: dict | None
+    environment:      str
+    timestamp:        datetime
+
+    # ── Tracing ──
+    trace_id:       str | None
+    correlation_id: str | None
+    span_id:        str | None
+    parent_span_id: str | None
 
     model_config = {"from_attributes": True}
 
@@ -54,5 +60,24 @@ class InsightOut(BaseModel):
 
 
 class InsightRequest(BaseModel):
-    service_name: str
-    error_type: str
+    # Make all fields optional so the frontend can send EITHER a trace_id OR service/error
+    service_name: str | None = None
+    error_type: str | None = None
+    trace_id: str | None = None
+
+class FailureIngestRequest(BaseModel):
+    service_name:     str
+    endpoint:         str
+    http_method:      str        = "GET"
+    status_code:      int        = 500
+    error_type:       str
+    error_message:    str
+    stack_trace:      str | None = None
+    request_metadata: dict | None = None
+    environment:      str        = "production"
+
+    # ── Tracing fields (all optional — not every service sends them) ──
+    trace_id:       str | None = None
+    correlation_id: str | None = None
+    span_id:        str | None = None
+    parent_span_id: str | None = None    

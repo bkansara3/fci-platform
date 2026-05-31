@@ -177,3 +177,31 @@ td            { padding: 9px 12px; border-bottom: 1px solid var(--border); verti
 @keyframes spin { to { transform: rotate(360deg); } }
 .errmsg       { background: #2e0f0f; border: 1px solid #e0555530; color: var(--red); padding: 9px 14px; border-radius: var(--r); font-size: 12px; margin-bottom: 10px; }
 .empty        { text-align: center; color: var(--dim); padding: 48px; font-size: 12px; }
+
+
+
+/* App.css */
+
+/* 1. Default Light Theme */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --primary-button: #007bff;
+    --button-text: #ffffff;
+}
+
+/* 2. Dark Theme Overrides */
+/* When the body has the 'data-theme="dark"' attribute, these colors apply */
+[data-theme='dark'] {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --primary-button: #bb86fc;
+    --button-text: #000000;
+}
+
+/* 3. Apply the variables to your elements */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease; /* Smooth transition when toggling */
+}

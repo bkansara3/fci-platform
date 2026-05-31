@@ -3,9 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, SessionLocal
 from app.models import Base
-from app.routers import failures, analytics, insights
+from app.routers import failures, analytics, insights, auth
 from app.seeder import seed_failures
-from app.simulator.simulator import start_simulator_thread
 
 # 1. Create database tables
 Base.metadata.create_all(bind=engine)
@@ -14,7 +13,7 @@ Base.metadata.create_all(bind=engine)
 # 2. Define the lifespan context manager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup logic
+    # Startup logic: Ensure database is ready and seeded
     db = SessionLocal()
     try:
         n = seed_failures(db, count=250)
@@ -25,10 +24,8 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
         
-    # Start simulator — sends 1 new failure every 10 seconds
-    start_simulator_thread(interval_seconds=100)
-    print("[FCI] Simulator started — live failures incoming")
-    yield  # Hand control back to FastAPI
+    # Yield control back to FastAPI so it can start serving requests
+    yield  
 
     # Shutdown logic would go here (none needed for now)
 
@@ -49,6 +46,7 @@ app.add_middleware(
 )
 
 # 5. Include Routers
+app.include_router(auth.router, prefix="/api/v1")
 app.include_router(failures.router, prefix="/api/v1")
 app.include_router(analytics.router, prefix="/api/v1")
 app.include_router(insights.router, prefix="/api/v1")

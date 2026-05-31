@@ -5,7 +5,7 @@ from app.models import Failure
 from app.schemas import FailureOut, PaginatedFailures
 from pydantic import BaseModel
 from datetime import datetime, timezone
-
+from app.auth import require_admin
 router = APIRouter(prefix="/failures", tags=["failures"])
 
 
@@ -51,6 +51,11 @@ class FailureIngestRequest(BaseModel):
     stack_trace:      str | None = None
     request_metadata: dict | None = None
     environment:      str = "production"
+    # ── Store tracing fields (Added these back!) ──
+    trace_id:       str | None = None
+    correlation_id: str | None = None
+    span_id:        str | None = None
+    parent_span_id: str | None = None
 
 @router.post("/ingest", status_code=201)
 def ingest_failure(
@@ -68,9 +73,54 @@ def ingest_failure(
         request_metadata = payload.request_metadata,
         environment      = payload.environment,
         timestamp        = datetime.now(timezone.utc),
+
+         # ── Store tracing fields ──────────────────────
+        trace_id         = payload.trace_id,
+        correlation_id   = payload.correlation_id,
+        span_id          = payload.span_id,
+        parent_span_id   = payload.parent_span_id,
     )
     db.add(failure)
     db.commit()
     db.refresh(failure)
     print(f"[FCI] Ingested failure #{failure.id} — {failure.service_name}/{failure.error_type}")
     return {"id": failure.id, "message": "failure captured"}
+
+
+# ── New endpoint: find all failures for a trace ────────────
+@router.get("/trace/{trace_id}")
+def get_failures_by_trace(
+    trace_id: str,
+    db: Session = Depends(get_db)
+    
+):
+    """
+    Given a trace_id, return ALL failures across ALL services
+    that share that trace. This shows the full failure journey.
+    """
+    failures = (
+        db.query(Failure)
+        .filter(Failure.trace_id == trace_id)
+        .order_by(Failure.timestamp.asc())   # chronological order
+        .all()
+    )
+    return [FailureOut.model_validate(f) for f in failures]
+
+# ── New endpoint: find by correlation (order_id etc) ───────
+@router.get("/correlation/{correlation_id}")
+def get_failures_by_correlation(
+    correlation_id: str,
+    db: Session = Depends(get_db)
+    
+):
+    """
+    Find all failures related to a business entity
+    e.g. order_id=ORD-123 failed across multiple services
+    """
+    failures = (
+        db.query(Failure)
+        .filter(Failure.correlation_id == correlation_id)
+        .order_by(Failure.timestamp.asc())
+        .all()
+    )
+    return [FailureOut.model_validate(f) for f in failures]

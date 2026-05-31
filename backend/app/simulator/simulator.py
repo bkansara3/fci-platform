@@ -1,167 +1,163 @@
 import random
 import time
-import threading
 import requests
-from datetime import datetime, timezone
+import uuid
 
-# Same failure scenarios as seeder — but sends via HTTP not direct DB
-SCENARIOS = [
-    {
-        "service_name": "payment-service",
-        "endpoints":    ["/api/payments", "/api/refunds", "/api/subscriptions"],
-        "failures": [
-            {
-                "error_type":    "DependencyFailure",
-                "weight":        5,
-                "messages":      [
-                    "Stripe API returned 503: Service Unavailable",
-                    "Circuit breaker OPEN: 15 failures in 60s",
-                    "Payment gateway connection reset by peer",
-                ],
-                "stack_trace":   "stripe.error.APIConnectionError\n  File 'app/gateways/stripe.py', line 89"
-            },
-            {
-                "error_type":    "DatabaseConnectionError",
-                "weight":        3,
-                "messages":      [
-                    "Deadlock on table 'transactions': rolled back",
-                    "Too many connections: pool_size=10 exceeded",
-                ],
-                "stack_trace":   "sqlalchemy.exc.OperationalError: Deadlock\n  File 'app/repositories/transaction.py', line 67"
-            },
-            {
-                "error_type":    "ConfigurationError",
-                "weight":        1,
-                "messages":      ["Missing env var: STRIPE_WEBHOOK_SECRET"],
-                "stack_trace":   "KeyError: 'STRIPE_WEBHOOK_SECRET'\n  File 'app/core/config.py', line 12"
-            },
-        ]
-    },
-    {
-        "service_name": "user-service",
-        "endpoints":    ["/api/users", "/api/auth/login", "/api/auth/refresh"],
-        "failures": [
-            {
-                "error_type":    "DatabaseConnectionError",
-                "weight":        4,
-                "messages":      [
-                    "Connection to postgres://db:5432 refused after 3 retries",
-                    "Max pool size exceeded",
-                ],
-                "stack_trace":   "sqlalchemy.exc.OperationalError\n  File 'app/db/session.py', line 45"
-            },
-            {
-                "error_type":    "AuthenticationError",
-                "weight":        3,
-                "messages":      [
-                    "JWT signature verification failed: token tampered",
-                    "Token expired at 2024-01-15T10:00:00Z",
-                ],
-                "stack_trace":   "jose.exceptions.JWTError\n  File 'app/middleware/auth.py', line 78"
-            },
-            {
-                "error_type":    "TimeoutError",
-                "weight":        2,
-                "messages":      ["Redis cache lookup timed out after 5000ms"],
-                "stack_trace":   "asyncio.TimeoutError\n  File 'app/services/cache.py', line 34"
-            },
-        ]
-    },
-    {
-        "service_name": "inventory-service",
-        "endpoints":    ["/api/inventory", "/api/warehouse/sync", "/api/reservations"],
-        "failures": [
-            {
-                "error_type":    "TimeoutError",
-                "weight":        4,
-                "messages":      [
-                    "Warehouse sync RPC timed out after 10000ms",
-                    "ElasticSearch query timed out: query_time=30001ms",
-                ],
-                "stack_trace":   "grpc.RpcError: DEADLINE_EXCEEDED\n  File 'app/clients/warehouse.py', line 45"
-            },
-            {
-                "error_type":    "DependencyFailure",
-                "weight":        3,
-                "messages":      [
-                    "Kafka consumer lag exceeded threshold: lag=50000",
-                    "Redis cluster node unreachable: 192.168.1.5:6379",
-                ],
-                "stack_trace":   "ConnectionError: Redis cluster failed\n  File 'app/cache/redis_cluster.py', line 23"
-            },
-        ]
-    },
-]
-
+# --- Configuration ---
 INGEST_URL = "http://127.0.0.1:8001/api/v1/failures/ingest"
 
 
-def _pick_weighted(failures):
-    total = sum(f["weight"] for f in failures)
-    r = random.uniform(0, total)
-    cumulative = 0
-    for f in failures:
-        cumulative += f["weight"]
-        if r <= cumulative:
-            return f
-    return failures[-1]
-
-
-def _send_one_failure():
-    """Pick a random service and send one failure to the ingest endpoint."""
-    svc = random.choice(SCENARIOS)
-    failure = _pick_weighted(svc["failures"])
-
-    endpoint = random.choice(svc["endpoints"])
-
-    payload = {
-        "service_name":     svc["service_name"],
-        "endpoint":         endpoint,
-        "http_method":      random.choice(["GET"]),
-        "status_code":      500,
-        "error_type":       failure["error_type"],
-        "error_message":    random.choice(failure["messages"]),
-        "stack_trace":      failure["stack_trace"],
-        "request_metadata": {
-            "trace_id":   f"trace-{random.randint(100000, 999999)}",
-            "region":     random.choice(["ap-south-1", "us-east-1", "eu-west-1"]),
-            "user_agent": "internal-service/1.0",
-        },
-        "environment": "production",
+SCENARIOS = {
+    "cart-service": {
+        "endpoints": ["/api/cart/add", "/api/cart/checkout"],
+        "failures": [
+            {"type": "RedisConnectionError", "msg": "Timeout connecting to Redis cluster: port 6379", "stack": "redis.exceptions.TimeoutError\n  File 'app/cache.py', line 112"},
+            {"type": "ValidationException", "msg": "Cart is empty or contains invalid items", "stack": "app.exceptions.ValidationError\n  File 'app/services/cart.py', line 45"}
+        ]
+    },
+    "order-service": {
+        "endpoints": ["/api/orders/create", "/api/orders/validate"],
+        "failures": [
+            {"type": "DatabaseTimeout", "msg": "Postgres connection pool exhausted", "stack": "sqlalchemy.exc.TimeoutError\n  File 'app/db.py', line 88"},
+            {"type": "StateConflictError", "msg": "Order state transition invalid: PENDING to SHIPPED", "stack": "app.domain.order.py\n  File 'app/domain/order.py', line 201"}
+        ]
+    },
+    "inventory-service": {
+        "endpoints": ["/api/inventory/reserve", "/api/inventory/release"],
+        "failures": [
+            {"type": "StockUnavailableException", "msg": "Item SKU-99382 out of stock across all warehouses", "stack": "app.services.inventory.py\n  File 'app/services/inventory.py', line 33"},
+            {"type": "DeadlockDetected", "msg": "Transaction deadlock on table 'stock_levels'", "stack": "psycopg2.errors.DeadlockDetected\n  File 'app/repositories/stock.py', line 67"}
+        ]
+    },
+    "payment-service": {
+        "endpoints": ["/api/payments/process", "/api/payments/refund"],
+        "failures": [
+            {"type": "DependencyFailure", "msg": "Stripe API returned 503: Service Unavailable", "stack": "stripe.error.APIConnectionError\n  File 'app/gateways/stripe.py', line 89"},
+            {"type": "FraudBlockedException", "msg": "Transaction blocked by anti-fraud AI model", "stack": "app.security.fraud.py\n  File 'app/security/fraud.py', line 12"}
+        ]
+    },
+    "notification-service": {
+        "endpoints": ["kafka_consumer_group: order_events", "kafka_consumer_group: user_alerts"],
+        "failures": [
+            {"type": "SMTPConnectionError", "msg": "Failed to connect to SendGrid SMTP relay", "stack": "smtplib.SMTPConnectError\n  File 'app/email/sender.py', line 45"},
+            {"type": "TemplateRenderError", "msg": "Missing context variable 'user_name' in receipt.html", "stack": "jinja2.exceptions.UndefinedError\n  File 'app/templates/render.py', line 22"}
+        ]
     }
+}
 
+def _send_to_fci(payload: dict):
+    """Helper function to cleanly send the payload and handle logs."""
     try:
         response = requests.post(INGEST_URL, json=payload, timeout=3)
         if response.status_code == 201:
-            data = response.json()
-            print(f"[Simulator] ✓ #{data['id']} {svc['service_name']} → {failure['error_type']}")
+            print(f"[Simulator] ✓ Ingested | {payload['service_name']} → {payload['error_type']}")
         else:
-            print(f"[Simulator] ✗ Ingest failed: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"[Simulator] ✗ Could not reach FCI: {e}")
+            print(f"[Simulator] ✗ HTTP {response.status_code}: {response.text}")
+    except Exception as e:
+        print(f"[Simulator] ✗ Connection failed: {e}")
 
+def _send_random_single_failure():
+    """Fires a standard, isolated API failure from any random service."""
+    svc_name = random.choice(list(SCENARIOS.keys()))
+    svc_data = SCENARIOS[svc_name]
+    failure = random.choice(svc_data["failures"])
+    
+    # Notification service is heavily async
+    method = "ASYNC" if svc_name == "notification-service" else random.choice(["GET", "POST"])
+
+    payload = {
+        "service_name":     svc_name,
+        "endpoint":         random.choice(svc_data["endpoints"]),
+        "http_method":      method,
+        "status_code":      500,
+        "error_type":       failure["type"],
+        "error_message":    failure["msg"],
+        "stack_trace":      failure["stack"],
+        "environment":      "production",
+        "trace_id":         f"trace-{uuid.uuid4().hex[:12]}",
+        "span_id":          f"span-{uuid.uuid4().hex[:8]}",
+        "parent_span_id":   None, 
+        "request_metadata": {"user_agent": "fci-random-simulator"}
+    }
+    print(f"\n[Simulator] ⚡ Firing isolated {method} failure...")
+    _send_to_fci(payload)
+
+def _simulate_distributed_flow():
+    """
+    Simulates a full user journey that builds a trace tree.
+    It randomly decides WHICH service in the chain will crash.
+    """
+    trace_id       = f"trace-{uuid.uuid4().hex[:12]}"
+    correlation_id = f"ORD-{random.randint(10000, 99999)}"
+    
+    print(f"\n[Simulator] 📦 Starting Distributed Flow (trace={trace_id})")
+
+    # The chain of services involved in an order
+    flow_steps = ["cart-service", "order-service", "inventory-service", "payment-service", "notification-service"]
+    
+    # Randomly pick where the architecture breaks
+    failing_service = random.choice(flow_steps)
+    
+    parent_span = None
+    
+    for step in flow_steps:
+        current_span = f"span-{uuid.uuid4().hex[:8]}"
+        
+        # If this step succeeds, just log it locally (don't send to FCI)
+        if step != failing_service:
+            print(f"   ↳ {step} ✅ (span: {current_span})")
+            parent_span = current_span # Pass the baton to the next service
+            time.sleep(0.2)
+            continue
+            
+        # 💥 WE HIT THE FAILING SERVICE! 💥
+        print(f"   ↳ {step} ❌ CRASHED! (span: {current_span}, parent: {parent_span})")
+        
+        failure = random.choice(SCENARIOS[step]["failures"])
+        is_async = (step == "notification-service")
+        
+        payload = {
+            "service_name":  step,
+            "endpoint":      random.choice(SCENARIOS[step]["endpoints"]),
+            "http_method":   "ASYNC" if is_async else "POST",
+            "status_code":   500,
+            "error_type":    failure["type"],
+            "error_message": failure["msg"],
+            "stack_trace":   failure["stack"],
+            "environment":   "production",
+            
+            # ── The Tracing Glue ──
+            "trace_id":       trace_id,
+            "correlation_id": correlation_id,    
+            "span_id":        current_span,
+            "parent_span_id": parent_span, 
+
+            "request_metadata": {
+                "order_id": correlation_id,
+                "flow_type": "async_pubsub" if is_async else "sync_api"
+            }
+        }
+        
+        _send_to_fci(payload)
+        break # Stop the loop. The trace dies here.
 
 def run_simulator(interval_seconds: int = 10):
-    """
-    Runs forever in a background thread.
-    Sends one failure every `interval_seconds` seconds.
-    """
-    print(f"[Simulator] Started — sending 1 failure every {interval_seconds}s")
-    # Small initial delay so FastAPI fully starts first
-    time.sleep(5)
+    print(f"=================================================")
+    print(f"🚀 FCI Unified Traffic Simulator Started")
+    print(f"🎯 Target URL: {INGEST_URL}")
+    print(f"=================================================\n")
+    
+    time.sleep(1) 
 
     while True:
-        _send_one_failure()
+        # 60% chance for a complex distributed trace flow
+        # 40% chance for background noise (isolated single service errors)
+        if random.random() < 0.60:
+            _simulate_distributed_flow()
+        else:
+            _send_random_single_failure()
+
         time.sleep(interval_seconds)
 
-
-def start_simulator_thread(interval_seconds: int = 10):
-    """Start simulator as a daemon thread — dies when main process dies."""
-    thread = threading.Thread(
-        target=run_simulator,
-        args=(interval_seconds,),
-        daemon=True,        # ← automatically stops when FastAPI stops
-        name="fci-simulator"
-    )
-    thread.start()
-    return thread
+if __name__ == "__main__":
+    run_simulator(interval_seconds=6)

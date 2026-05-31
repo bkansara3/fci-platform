@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\IncidentDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\IncidentDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\lib\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\useApi.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
@@ -19,36 +15,24 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\Incidents.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\lib\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\components\\Sidebar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\Sidebar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\Login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\contexts\\ThemeContext.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\contexts\\ThemeContext.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\IncidentDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\IncidentDetail.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -58,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 26,
+          "SelectedChildIndex": 23,
           "Children": [
             {
               "$type": "Bookmark",
@@ -138,137 +122,85 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "index.css",
-              "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\index.css",
-              "RelativeDocumentMoniker": "src\\index.css",
-              "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\index.css",
-              "RelativeToolTip": "src\\index.css",
-              "ViewState": "AgIAAKoAAAAAAAAAAAAIwM8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-05-31T19:36:07.045Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "ThemeContext.jsx",
-              "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\contexts\\ThemeContext.jsx",
-              "RelativeDocumentMoniker": "src\\contexts\\ThemeContext.jsx",
-              "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\contexts\\ThemeContext.jsx",
-              "RelativeToolTip": "src\\contexts\\ThemeContext.jsx",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAABkAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2026-05-31T18:44:27.916Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "app.css",
-              "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\app.css",
-              "RelativeDocumentMoniker": "src\\app.css",
-              "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\app.css",
-              "RelativeToolTip": "src\\app.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABNAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-05-31T18:42:19.671Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Login.jsx",
-              "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Login.jsx",
-              "RelativeDocumentMoniker": "src\\pages\\Login.jsx",
-              "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Login.jsx",
-              "RelativeToolTip": "src\\pages\\Login.jsx",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAAEAAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2026-05-31T11:36:00.941Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "api.js",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\api.js",
               "RelativeDocumentMoniker": "src\\lib\\api.js",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\api.js",
               "RelativeToolTip": "src\\lib\\api.js",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-05-30T20:18:12.759Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "useApi.js",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\useApi.js",
               "RelativeDocumentMoniker": "src\\lib\\useApi.js",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\lib\\useApi.js",
               "RelativeToolTip": "src\\lib\\useApi.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAIAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-05-30T20:18:11.656Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Incidents.jsx",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Incidents.jsx",
               "RelativeDocumentMoniker": "src\\pages\\Incidents.jsx",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Incidents.jsx",
               "RelativeToolTip": "src\\pages\\Incidents.jsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-05-30T19:28:55.482Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "IncidentDetail.jsx",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\IncidentDetail.jsx",
               "RelativeDocumentMoniker": "src\\pages\\IncidentDetail.jsx",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\IncidentDetail.jsx",
               "RelativeToolTip": "src\\pages\\IncidentDetail.jsx",
-              "ViewState": "AgIAAI0AAAAAAAAAAAAQwJsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-05-30T19:28:40.462Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "Dashboard.jsx",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Dashboard.jsx",
               "RelativeDocumentMoniker": "src\\pages\\Dashboard.jsx",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\pages\\Dashboard.jsx",
               "RelativeToolTip": "src\\pages\\Dashboard.jsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAAAG0AAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-05-30T19:27:31.565Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "App.jsx",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\App.jsx",
               "RelativeDocumentMoniker": "src\\App.jsx",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\App.jsx",
               "RelativeToolTip": "src\\App.jsx",
-              "ViewState": "AgIAACoAAAAAAAAAAAAAABsAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-05-30T19:27:15.873Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 6,
               "Title": "vite.config.js",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\vite.config.js",
               "RelativeDocumentMoniker": "vite.config.js",
@@ -281,13 +213,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 4,
               "Title": "Sidebar.jsx",
               "DocumentMoniker": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\components\\Sidebar.jsx",
               "RelativeDocumentMoniker": "src\\components\\Sidebar.jsx",
               "ToolTip": "C:\\Users\\bkansara\\Desktop\\Bharat Learning\\TASK\\frontend\\src\\components\\Sidebar.jsx",
               "RelativeToolTip": "src\\components\\Sidebar.jsx",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAC4AAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-05-30T10:03:40.878Z",
               "EditorCaption": ""

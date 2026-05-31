@@ -1,0 +1,25 @@
+/* App.css */
+
+/* 1. Default Light Theme */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --primary-button: #007bff;
+    --button-text: #ffffff;
+}
+
+/* 2. Dark Theme Overrides */
+/* When the body has the 'data-theme="dark"' attribute, these colors apply */
+[data-theme='dark'] {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --primary-button: #bb86fc;
+    --button-text: #000000;
+}
+
+/* 3. Apply the variables to your elements */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease; /* Smooth transition when toggling */
+}

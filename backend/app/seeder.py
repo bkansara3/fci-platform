@@ -1,56 +1,46 @@
 import random
+import uuid
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from app.models import Failure
 
-SERVICES = [
-    {
-        "name": "payment-service",
-        "endpoints": ["/api/payments", "/api/payments/{id}/process", "/api/refunds", "/api/subscriptions"],
+SERVICES = {
+    "cart-service": {
+        "endpoints": ["/api/cart/add", "/api/cart/checkout"],
         "scenarios": [
-            {"error_type": "DependencyFailure", "weight": 5,
-             "messages": ["Stripe API returned 503: Service Unavailable", "Circuit breaker OPEN for stripe-gateway: 15 failures in 60s", "Payment gateway connection reset by peer"],
-             "stack": "stripe.error.APIConnectionError: Error communicating with Stripe\n  File 'app/gateways/stripe.py', line 89, in charge_card\n  File 'app/services/payment.py', line 156, in process_payment"},
-            {"error_type": "DatabaseConnectionError", "weight": 3,
-             "messages": ["Deadlock on table 'transactions': rolled back", "Lock wait timeout exceeded for ledger update", "Too many connections: pool_size=10 exceeded"],
-             "stack": "sqlalchemy.exc.OperationalError: Deadlock found\n  File 'app/repositories/transaction.py', line 67, in record_transaction"},
-            {"error_type": "ConfigurationError", "weight": 1,
-             "messages": ["Missing env var: STRIPE_WEBHOOK_SECRET", "Invalid config: PAYMENT_TIMEOUT_MS must be integer"],
-             "stack": "KeyError: 'STRIPE_WEBHOOK_SECRET'\n  File 'app/core/config.py', line 12, in validate_config"},
-        ],
+            {"error_type": "RedisConnectionError", "weight": 4, "messages": ["Timeout connecting to Redis cluster: port 6379"], "stack": "redis.exceptions.TimeoutError\n  File 'app/cache.py', line 112"},
+            {"error_type": "ValidationException", "weight": 2, "messages": ["Cart is empty or contains invalid items"], "stack": "app.exceptions.ValidationError\n  File 'app/services/cart.py', line 45"}
+        ]
     },
-    {
-        "name": "user-service",
-        "endpoints": ["/api/users", "/api/users/{id}", "/api/auth/login", "/api/auth/refresh"],
+    "order-service": {
+        "endpoints": ["/api/orders/create", "/api/orders/validate"],
         "scenarios": [
-            {"error_type": "DatabaseConnectionError", "weight": 4,
-             "messages": ["Connection to postgres://db:5432/users refused after 3 retries", "SSL connection error: certificate verify failed", "Max pool size exceeded"],
-             "stack": "sqlalchemy.exc.OperationalError: could not connect to server\n  File 'app/db/session.py', line 45, in get_db\n  File 'app/services/user.py', line 23, in get_user"},
-            {"error_type": "AuthenticationError", "weight": 3,
-             "messages": ["JWT signature verification failed: token tampered", "Token expired at 2024-01-15T10:00:00Z", "Invalid issuer: expected 'auth-service'"],
-             "stack": "jose.exceptions.JWTError: Signature verification failed\n  File 'app/middleware/auth.py', line 78, in verify_token"},
-            {"error_type": "TimeoutError", "weight": 2,
-             "messages": ["Request to notification-service timed out after 5000ms", "Redis cache lookup timed out"],
-             "stack": "asyncio.TimeoutError\n  File 'app/services/notification.py', line 34, in notify_user"},
-        ],
+            {"error_type": "DatabaseTimeout", "weight": 5, "messages": ["Postgres connection pool exhausted"], "stack": "sqlalchemy.exc.TimeoutError\n  File 'app/db.py', line 88"},
+            {"error_type": "StateConflictError", "weight": 2, "messages": ["Order state transition invalid: PENDING to SHIPPED"], "stack": "app.domain.order.py\n  File 'app/domain/order.py', line 201"}
+        ]
     },
-    {
-        "name": "inventory-service",
-        "endpoints": ["/api/inventory", "/api/inventory/{sku}", "/api/warehouse/sync", "/api/reservations"],
+    "inventory-service": {
+        "endpoints": ["/api/inventory/reserve", "/api/inventory/release"],
         "scenarios": [
-            {"error_type": "TimeoutError", "weight": 4,
-             "messages": ["Warehouse sync RPC timed out after 10000ms", "ElasticSearch query timed out: query_time=30001ms", "Batch update blocked waiting for distributed lock"],
-             "stack": "grpc.RpcError: StatusCode.DEADLINE_EXCEEDED\n  File 'app/clients/warehouse.py', line 45, in sync_stock"},
-            {"error_type": "DependencyFailure", "weight": 3,
-             "messages": ["Supplier API returned 500", "Kafka consumer lag exceeded threshold: lag=50000", "Redis cluster node unreachable: 192.168.1.5:6379"],
-             "stack": "ConnectionError: Failed to connect to Redis cluster\n  File 'app/cache/redis_cluster.py', line 23, in get_cached_stock"},
-            {"error_type": "DataValidationError", "weight": 1,
-             "messages": ["Stock quantity cannot be negative: sku=PROD-123, quantity=-5", "Invalid warehouse code 'WH-999'"],
-             "stack": "pydantic.ValidationError: 1 validation error for StockUpdate\n  quantity: must be > 0"},
-        ],
+            {"error_type": "StockUnavailableException", "weight": 3, "messages": ["Item SKU-99382 out of stock across all warehouses"], "stack": "app.services.inventory.py\n  File 'app/services/inventory.py', line 33"},
+            {"error_type": "DeadlockDetected", "weight": 3, "messages": ["Transaction deadlock on table 'stock_levels'"], "stack": "psycopg2.errors.DeadlockDetected\n  File 'app/repositories/stock.py', line 67"}
+        ]
     },
-]
-
+    "payment-service": {
+        "endpoints": ["/api/payments/process", "/api/payments/refund"],
+        "scenarios": [
+            {"error_type": "DependencyFailure", "weight": 5, "messages": ["Stripe API returned 503: Service Unavailable", "Payment gateway connection reset"], "stack": "stripe.error.APIConnectionError\n  File 'app/gateways/stripe.py', line 89"},
+            {"error_type": "FraudBlockedException", "weight": 1, "messages": ["Transaction blocked by anti-fraud AI model"], "stack": "app.security.fraud.py\n  File 'app/security/fraud.py', line 12"}
+        ]
+    },
+    "notification-service": {
+        "endpoints": ["kafka_consumer_group: order_events"],
+        "scenarios": [
+            {"error_type": "SMTPConnectionError", "weight": 4, "messages": ["Failed to connect to SendGrid SMTP relay"], "stack": "smtplib.SMTPConnectError\n  File 'app/email/sender.py', line 45"},
+            {"error_type": "TemplateRenderError", "weight": 1, "messages": ["Missing context variable 'user_name' in receipt.html"], "stack": "jinja2.exceptions.UndefinedError\n  File 'app/templates/render.py', line 22"}
+        ]
+    }
+}
 
 def _pick_weighted(scenarios):
     total = sum(s["weight"] for s in scenarios)
@@ -62,51 +52,92 @@ def _pick_weighted(scenarios):
             return s
     return scenarios[-1]
 
+def _generate_timestamp(now):
+    """Spreads timestamps over the last 48h with business-hour weighting."""
+    hour_offset = random.choices(
+        range(0, 48),
+        weights=[3 if (h % 24) in range(9, 18) else 1 for h in range(48)]
+    )[0]
+    minute_offset = random.randint(0, 59)
+    return now - timedelta(hours=hour_offset, minutes=minute_offset)
 
-def seed_failures(db: Session, count: int = 150) -> int:
+def seed_failures(db: Session, count: int = 250) -> int:
     existing = db.query(Failure).count()
     if existing >= count:
-        return 0  # already seeded
+        return 0  # Already seeded
 
     now = datetime.now(timezone.utc)
     records = []
-    weights = [4, 3, 3]
-    total_w = sum(weights)
-
-    for svc, w in zip(SERVICES, weights):
-        n = round(count * w / total_w)
-        for _ in range(n):
-            scenario = _pick_weighted(svc["scenarios"])
-            endpoint = random.choice(svc["endpoints"]).replace("{id}", str(random.randint(100, 999))).replace("{sku}", f"PROD-{random.randint(10, 99)}")
-
-            # Spread timestamps over last 48h with business-hour weighting
-            hour_offset = random.choices(
-                range(0, 48),
-                weights=[
-                    # More failures during business hours (9-18)
-                    3 if (h % 24) in range(9, 18) else 1
-                    for h in range(48)
-                ]
-            )[0]
-            minute_offset = random.randint(0, 59)
-            ts = now - timedelta(hours=hour_offset, minutes=minute_offset)
-
+    
+    # Generate failures until we hit the desired count
+    while len(records) < count:
+        is_distributed_trace = random.random() < 0.30 # 30% chance to generate a cascading failure chain
+        
+        ts = _generate_timestamp(now)
+        trace_id = f"trace-{uuid.uuid4().hex[:12]}"
+        correlation_id = f"ORD-{random.randint(10000, 99999)}"
+        
+        if is_distributed_trace:
+            # Create a realistic cascading trace: Payment fails -> causes Inventory to fail -> causes Order to fail
+            payment_span = f"span-{uuid.uuid4().hex[:8]}"
+            inventory_span = f"span-{uuid.uuid4().hex[:8]}"
+            order_span = f"span-{uuid.uuid4().hex[:8]}"
+            
+            chain = [
+                ("order-service", order_span, None),
+                ("inventory-service", inventory_span, order_span),
+                ("payment-service", payment_span, inventory_span)
+            ]
+            
+            for svc_name, span, parent_span in chain:
+                scenario = _pick_weighted(SERVICES[svc_name]["scenarios"])
+                records.append(Failure(
+                    service_name=svc_name,
+                    endpoint=random.choice(SERVICES[svc_name]["endpoints"]),
+                    http_method="POST",
+                    status_code=500,
+                    error_type=scenario["error_type"],
+                    error_message=random.choice(scenario["messages"]),
+                    stack_trace=scenario["stack"],
+                    environment="production",
+                    timestamp=ts,
+                    
+                    # ── Top-Level Tracing Fields ──
+                    trace_id=trace_id,
+                    correlation_id=correlation_id,
+                    span_id=span,
+                    parent_span_id=parent_span,
+                    
+                    request_metadata={"region": "ap-south-1"}
+                ))
+        else:
+            # Generate a standard isolated failure
+            svc_name = random.choice(list(SERVICES.keys()))
+            scenario = _pick_weighted(SERVICES[svc_name]["scenarios"])
+            is_async = (svc_name == "notification-service")
+            
             records.append(Failure(
-                service_name=svc["name"],
-                endpoint=endpoint,
-                http_method=random.choice(["GET", "POST", "PUT", "DELETE"]),
+                service_name=svc_name,
+                endpoint=random.choice(SERVICES[svc_name]["endpoints"]),
+                http_method="ASYNC" if is_async else random.choice(["GET", "POST"]),
                 status_code=500,
                 error_type=scenario["error_type"],
                 error_message=random.choice(scenario["messages"]),
                 stack_trace=scenario["stack"],
-                request_metadata={
-                    "trace_id": f"trace-{random.randint(100000, 999999)}",
-                    "user_agent": "internal-service/1.0",
-                    "region": random.choice(["ap-south-1", "us-east-1", "eu-west-1"]),
-                },
                 environment="production",
                 timestamp=ts,
+                
+                # ── Top-Level Tracing Fields ──
+                trace_id=trace_id,
+                correlation_id=correlation_id,
+                span_id=f"span-{uuid.uuid4().hex[:8]}",
+                parent_span_id=None,
+                
+                request_metadata={"region": "ap-south-1"}
             ))
+
+    # Truncate to exact count in case the chain pushed it slightly over
+    records = records[:count]
 
     db.bulk_save_objects(records)
     db.commit()
